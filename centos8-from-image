@@ -1,0 +1,15 @@
+# Actualmente sin tags, se usa latest => Centos8
+CONTAINER_NAME=jekyll-builder-centos8
+REMOVE_CONTAINER=yes # or no
+
+if [ $REMOVE_CONTAINER = "yes" ]
+then
+  buildah rm $CONTAINER_NAME 
+fi
+
+# Pendiente migrar a un rol Ansible
+buildah --name $CONTAINER_NAME from centos:8
+buildah run $CONTAINER_NAME dnf install httpd -y
+buildah run $CONTAINER_NAME dnf install ruby ruby-devel -y
+buildah run $CONTAINER_NAME dnf group install "Development Tools" -y
+buildah run $CONTAINER_NAME gem install jekyll bundler 

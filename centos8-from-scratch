@@ -1,0 +1,4 @@
+newcontainer=$(buildah from scratch)
+scratchmnt=$(buildah mount $newcontainer)
+# El siguiente comando no es posible ya que el host es un Fedora
+dnf -y group install "Minimal Install" --releasever=8 --installroot=$scratchmnt
