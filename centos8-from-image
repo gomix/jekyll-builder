@@ -1,15 +1,34 @@
 # Actualmente sin tags, se usa latest => Centos8
 CONTAINER_NAME=jekyll-builder-centos8
+IMAGE_NAME=jekyll-builder-centos8
+
+# Removing previous artifacts
 REMOVE_CONTAINER=yes # or no
+REMOVE_IMAGE=yes # or no
 
 if [ $REMOVE_CONTAINER = "yes" ]
 then
-  buildah rm $CONTAINER_NAME 
+  echo "Removing container: " $CONTAINER_NAME
+  buildah rm $CONTAINER_NAME 2> /dev/null
+fi
+
+if [ $REMOVE_IMAGE = "yes" ]
+then
+  echo "Removing image: " $IMAGE_NAME
+  buildah rmi $IMAGE_NAME 2> /dev/null
 fi
 
 # Pendiente migrar a un rol Ansible
+#
+# Container build process
 buildah --name $CONTAINER_NAME from centos:8
 buildah run $CONTAINER_NAME dnf install httpd -y
 buildah run $CONTAINER_NAME dnf install ruby ruby-devel -y
 buildah run $CONTAINER_NAME dnf group install "Development Tools" -y
 buildah run $CONTAINER_NAME gem install jekyll bundler 
+
+# Configure container entrypoint to start httpd.
+buildah config --entrypoint "/usr/sbin/httpd -DFOREGROUND" $CONTAINER_NAME
+
+# Make container available as image
+buildah commit $CONTAINER_NAME $IMAGE_NAME
