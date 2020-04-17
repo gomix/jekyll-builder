@@ -22,10 +22,14 @@ fi
 #
 # Container build process
 buildah --name $CONTAINER_NAME from centos:8
-buildah run $CONTAINER_NAME dnf install httpd -y
-buildah run $CONTAINER_NAME dnf install ruby ruby-devel -y
-buildah run $CONTAINER_NAME dnf group install "Development Tools" -y
-buildah run $CONTAINER_NAME gem install jekyll bundler 
+buildah run $CONTAINER_NAME dnf update -y
+buildah run $CONTAINER_NAME dnf install ruby httpd -y
+buildah run $CONTAINER_NAME dnf install ruby-devel -y
+buildah run $CONTAINER_NAME dnf install @development -y
+buildah run $CONTAINER_NAME gem install --no-rdoc --no-ri jekyll bundler  
+#buildah run $CONTAINER_NAME dnf history rollback last-2 -y
+buildah run $CONTAINER_NAME dnf clean all
+buildah run $CONTAINER_NAME dnf history list 
 
 # Configure container entrypoint to start httpd.
 buildah config --entrypoint "/usr/sbin/httpd -DFOREGROUND" $CONTAINER_NAME
