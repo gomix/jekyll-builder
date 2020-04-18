@@ -28,6 +28,7 @@ buildah run $CONTAINER_NAME dnf install ruby-devel -y
 buildah run $CONTAINER_NAME dnf install @development -y
 buildah run $CONTAINER_NAME gem install --no-rdoc --no-ri jekyll bundler  
 #buildah run $CONTAINER_NAME dnf history rollback last-2 -y
+buildah run $CONTAINER_NAME gem sources --clear-all
 buildah run $CONTAINER_NAME dnf clean all
 buildah run $CONTAINER_NAME dnf history list 
 
